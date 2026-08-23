@@ -4,193 +4,157 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal CBT Modern - Darul Fawaid Ilmiyah</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     * { font-family: 'Plus Jakarta Sans', sans-serif; }
-    body {
-      min-height: 100vh;
-      background: radial-gradient(circle at 10% 20%, rgb(15, 23, 42) 0%, rgb(30, 41, 59) 90%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .login-container {
-      width: 100%;
-      max-width: 440px;
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 24px;
-      padding: 36px 32px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      color: #fff;
-    }
-    .brand-icon {
-      width: 72px;
-      height: 72px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-    }
-    .form-control {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 0.95rem;
-    }
-    .form-control:focus {
-      background: rgba(15, 23, 42, 0.9);
-      border-color: #10b981;
-      color: #fff;
-      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-    }
-    .form-control::placeholder { color: #94a3b8; }
-    .btn-login {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border: none;
-      color: white;
-      font-weight: 700;
-      padding: 12px 20px;
-      border-radius: 12px;
-      letter-spacing: 0.5px;
-      transition: all 0.2s ease;
-    }
-    .btn-login:hover {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
-    }
-    .quick-pill {
-      font-size: 0.75rem;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #cbd5e1;
-      border-radius: 8px;
-      padding: 6px 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .quick-pill:hover { background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #fff; }
   </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
 
-<div class="login-container">
-  <div class="brand-icon">
-    <i class="fas fa-graduation-cap fa-2x text-white"></i>
-  </div>
-  <div class="text-center mb-4">
-    <h3 class="fw-bold mb-1">CBT Portal Ujian</h3>
-    <p class="text-secondary small mb-0">Darul Fawaid Ilmiyah</p>
-  </div>
+  <!-- Background decorative glow -->
+  <div class="absolute top-10 left-10 w-96 h-96 bg-emerald-100/60 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-10 right-10 w-96 h-96 bg-sky-100/60 rounded-full blur-3xl pointer-events-none"></div>
 
-  <form onsubmit="prosesLogin(event)">
-    <div class="mb-3">
-      <label class="form-label text-light small fw-semibold">Username / NIS / NIP</label>
-      <div class="input-group">
-        <span class="input-group-text bg-transparent border-end-0 border-white-50 text-secondary"><i class="fas fa-user"></i></span>
-        <input type="text" id="username" class="form-control border-start-0 ps-0" placeholder="Masukkan ID Login Anda" required>
+  <div class="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl relative z-10">
+    
+    <!-- Brand Heading -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 mb-3.5">
+        <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">Portal Ujian CBT</h2>
+      <p class="text-xs text-slate-500 font-medium mt-1">Darul Fawaid Ilmiyah • Modern CBT Engine</p>
+    </div>
+
+    <!-- Login Form -->
+    <form onsubmit="prosesLogin(event)" class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Username / NIS / NIP</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="user" class="w-4 h-4"></i>
+          </div>
+          <input type="text" id="username" placeholder="Masukkan username atau NIS..." required
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold text-slate-700 mb-1.5">Password</label>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <i data-lucide="lock" class="w-4 h-4"></i>
+          </div>
+          <input type="password" id="password" placeholder="Masukkan password..." required
+            class="w-full pl-10 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition" />
+          <button type="button" onclick="togglePass()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+            <i data-lucide="eye" id="pass-icon" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="msg" class="hidden p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2"></div>
+
+      <button type="submit" id="btnLogin"
+        class="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition active:scale-95">
+        <span>Masuk ke Sistem CBT</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+    </form>
+
+    <!-- Quick Demo Accounts -->
+    <div class="mt-6 pt-5 border-t border-slate-100">
+      <div class="flex items-center gap-1.5 text-xs text-slate-400 font-semibold mb-2.5">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+        <span>Akun Demo Cepat:</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="isiAkun('admin', '123')"
+          class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+          <i data-lucide="shield" class="w-4 h-4 text-purple-600"></i>
+          <span>Admin</span>
+        </button>
+
+        <button type="button" onclick="isiAkun('anam', '123')"
+          class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+          <i data-lucide="book-open" class="w-4 h-4 text-sky-600"></i>
+          <span>Guru (Anam)</span>
+        </button>
+
+        <button type="button" onclick="isiAkun('fadol', '123')"
+          class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold flex flex-col items-center gap-1 transition">
+          <i data-lucide="user-check" class="w-4 h-4 text-emerald-600"></i>
+          <span>Siswa (Fadol)</span>
+        </button>
       </div>
     </div>
 
-    <div class="mb-4">
-      <div class="d-flex justify-content-between">
-        <label class="form-label text-light small fw-semibold">Password</label>
-        <span class="text-secondary small cursor-pointer" onclick="togglePass()" id="lblPass"><i class="fas fa-eye"></i> Lihat</span>
-      </div>
-      <div class="input-group">
-        <span class="input-group-text bg-transparent border-end-0 border-white-50 text-secondary"><i class="fas fa-lock"></i></span>
-        <input type="password" id="password" class="form-control border-start-0 ps-0" placeholder="••••••••" required>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-login w-100 mb-3" id="btnLogin">
-      <i class="fas fa-sign-in-alt me-2"></i> MASUK KE PORTAL
-    </button>
-  </form>
-
-  <div id="msg" class="text-danger text-center small mb-3"></div>
-
-  <div class="border-top border-white-10 pt-3">
-    <div class="text-secondary small text-center mb-2">Akun Demo Cepat:</div>
-    <div class="d-flex justify-content-center gap-2 flex-wrap">
-      <span class="quick-pill" onclick="isiAkun('admin', 'admin123')"><i class="fas fa-shield-alt text-danger me-1"></i> Admin</span>
-      <span class="quick-pill" onclick="isiAkun('guru01', 'guru123')"><i class="fas fa-chalkboard-teacher text-info me-1"></i> Guru</span>
-      <span class="quick-pill" onclick="isiAkun('siswa01', 'siswa123')"><i class="fas fa-user-graduate text-success me-1"></i> Siswa</span>
-    </div>
   </div>
-</div>
 
-<script>
-  // URL Web App Google Apps Script Aktif
-  const API_URL = 'https://script.google.com/macros/s/AKfycbysSoJeaz2W66vpxVDPhceruKBZNAYMKp7qDi6k9LWFvW8aIjVtD_dL6trA2NyEFY4pbQ/exec';
+  <script>
+    // URL Web App Google Apps Script Aktif
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxY35_7Io1cGVVwzwsEn66htauRqvrouHTFm12H8d--MkNA5vNZcVgDuuR9c2fb6X_E2g/exec';
 
-  function isiAkun(u, p) {
-    document.getElementById('username').value = u;
-    document.getElementById('password').value = p;
-  }
+    lucide.createIcons();
 
-  function togglePass() {
-    let inp = document.getElementById('password');
-    let lbl = document.getElementById('lblPass');
-    if (inp.type === 'password') {
-      inp.type = 'text';
-      lbl.innerHTML = '<i class="fas fa-eye-slash"></i> Sembunyi';
-    } else {
-      inp.type = 'password';
-      lbl.innerHTML = '<i class="fas fa-eye"></i> Lihat';
+    function isiAkun(u, p) {
+      document.getElementById('username').value = u;
+      document.getElementById('password').value = p;
+      document.getElementById('msg').classList.add('hidden');
     }
-  }
 
-  async function prosesLogin(e) {
-    e.preventDefault();
-    let btn = document.getElementById('btnLogin');
-    let msg = document.getElementById('msg');
-    let valUser = document.getElementById('username').value.trim();
-    let valPass = document.getElementById('password').value.trim();
+    function togglePass() {
+      const inp = document.getElementById('password');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
 
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Menghubungkan...';
-    btn.disabled = true;
-    msg.innerHTML = '';
+    async function prosesLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnLogin');
+      const msg = document.getElementById('msg');
+      const valUser = document.getElementById('username').value.trim();
+      const valPass = document.getElementById('password').value.trim();
 
-    try {
-      let res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'login', username: valUser, password: valPass })
-      }).then(r => r.json());
+      btn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span> Menghubungkan...';
+      btn.disabled = true;
+      msg.classList.add('hidden');
 
-      if (res.status === 'success') {
-        localStorage.setItem('cbt_user_id', res.user_id);
-        localStorage.setItem('cbt_role', res.role);
-        localStorage.setItem('cbt_nama', res.nama);
-        localStorage.setItem('cbt_kelas', res.kelas || '');
-        localStorage.setItem('cbt_mapel', res.mapel || '');
-        localStorage.setItem('cbt_token', res.token || '');
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'login', username: valUser, password: valPass })
+        }).then(r => r.json());
 
-        if (res.role === 'Admin') window.location.href = 'admin.html';
-        else if (res.role === 'Guru') window.location.href = 'guru.html';
-        else window.location.href = 'ujian.html';
-      } else {
-        msg.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> ' + (res.msg || 'Login gagal!');
+        if (res.status === 'success') {
+          localStorage.setItem('cbt_user_id', res.user_id);
+          localStorage.setItem('cbt_role', res.role);
+          localStorage.setItem('cbt_nama', res.nama);
+          localStorage.setItem('cbt_kelas', res.kelas || '');
+          localStorage.setItem('cbt_mapel', res.mapel || '');
+          localStorage.setItem('cbt_token', res.token || '');
+
+          if (res.role === 'Admin') window.location.href = 'admin.html';
+          else if (res.role === 'Guru') window.location.href = 'guru.html';
+          else window.location.href = 'ujian.html';
+        } else {
+          msg.textContent = res.msg || 'Username atau password salah.';
+          msg.classList.remove('hidden');
+        }
+      } catch (err) {
+        msg.textContent = 'Gagal terhubung ke Google Apps Script Web App. Pastikan Web App disetel ke Anyone.';
+        msg.classList.remove('hidden');
+      } finally {
+        btn.innerHTML = '<span>Masuk ke Sistem CBT</span><i data-lucide="arrow-right" class="w-4 h-4"></i>';
+        btn.disabled = false;
+        lucide.createIcons();
       }
-    } catch (err) {
-      msg.innerHTML = '<i class="fas fa-wifi me-1"></i> Gagal terhubung ke Google Script. Pastikan Web App disetel ke "Anyone".';
     }
-    btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> MASUK KE PORTAL';
-    btn.disabled = false;
-  }
-</script>
+  </script>
 </body>
 </html>
