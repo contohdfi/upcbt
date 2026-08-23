@@ -27,16 +27,16 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">Panel Guru Pengampu</h1>
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-sky-100 text-sky-800" id="badge-mapel">Mapel</span>
+            <span class="px-2.5 py-0.5 text-[11px] font-bold rounded-full bg-sky-100 text-sky-800" id="badge-mapel">Mapel</span>
           </div>
           <p class="text-xs text-slate-500 font-medium" id="nama-guru">Ust. Pengampu</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
         <button onclick="loadDataGuru()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
           <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-          <span>Refresh Data</span>
+          <span class="hidden sm:inline">Refresh Data</span>
         </button>
         <button onclick="logout()" class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition" title="Keluar">
           <i data-lucide="log-out" class="w-4 h-4"></i>
@@ -48,13 +48,22 @@
   <!-- Sub Navigation Tabs -->
   <div class="bg-white border-b border-slate-200 sticky top-[65px] z-30 px-4 sm:px-6">
     <div class="max-w-7xl mx-auto flex overflow-x-auto gap-2 py-2.5">
-      <button onclick="gantiTab('soal', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-sm flex items-center gap-2 transition">
-        <i data-lucide="database" class="w-4 h-4"></i>
-        <span>Bank Soal per Kelas</span>
+      <button onclick="gantiTab('dashboard', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-sm flex items-center gap-2 transition whitespace-nowrap">
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        <span>Dashboard</span>
       </button>
-      <button onclick="gantiTab('koreksi', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition">
+      <button onclick="gantiTab('soal', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition whitespace-nowrap">
+        <i data-lucide="database" class="w-4 h-4 text-sky-600"></i>
+        <span>Bank Soal & Editor</span>
+      </button>
+      <button onclick="gantiTab('koreksi', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition whitespace-nowrap">
         <i data-lucide="check-square" class="w-4 h-4 text-emerald-600"></i>
-        <span>Koreksi Manual Uraian</span>
+        <span>Koreksi Uraian</span>
+        <span id="badge-count-koreksi" class="hidden px-1.5 py-0.2 bg-amber-500 text-white text-[10px] rounded-full">0</span>
+      </button>
+      <button onclick="gantiTab('nilai', this)" class="nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition whitespace-nowrap">
+        <i data-lucide="award" class="w-4 h-4 text-purple-600"></i>
+        <span>Rekap Nilai Siswa</span>
       </button>
     </div>
   </div>
@@ -62,29 +71,87 @@
   <!-- Main Content -->
   <main class="max-w-7xl mx-auto w-full p-4 sm:p-6 flex-1 space-y-6">
 
-    <!-- TAB 1: BANK SOAL -->
-    <div id="panel-soal" class="panel active space-y-4">
+    <!-- TAB 1: DASHBOARD -->
+    <div id="panel-dashboard" class="panel active space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold">
+            <i data-lucide="database" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-bold block">TOTAL BUTIR SOAL</span>
+            <span class="text-2xl font-black text-slate-900" id="st-soal">0</span>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+            <i data-lucide="clock" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-bold block">MENUNGGU KOREKSI</span>
+            <span class="text-2xl font-black text-amber-600" id="st-koreksi">0</span>
+          </div>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+            <i data-lucide="award" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs text-slate-500 font-bold block">SISWA SELESAI UJIAN</span>
+            <span class="text-2xl font-black text-emerald-600" id="st-rekap">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+        <h3 class="font-bold text-slate-900 text-base mb-2">Panduan Guru</h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+          Gunakan tab <b>Bank Soal & Editor</b> untuk membuat atau mengedit butir soal (Pilihan Ganda, Isian Singkat, atau Uraian) beserta gambar pendukung. Saat siswa selesai mengerjakan, jawaban esai akan masuk ke tab <b>Koreksi Uraian</b> untuk diberi skor manual. Nilai kumulatif seluruh siswa dapat dilihat di tab <b>Rekap Nilai Siswa</b>.
+        </p>
+      </div>
+    </div>
+
+    <!-- TAB 2: BANK SOAL & EDITOR -->
+    <div id="panel-soal" class="panel space-y-4">
       <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
           <h3 class="font-bold text-slate-900 text-base">Koleksi Butir Soal Ujian</h3>
-          <p class="text-xs text-slate-500">Buat, edit soal bergambar, dan tentukan kunci jawaban</p>
+          <p class="text-xs text-slate-500">Kelola soal per kelas, pratinjau gambar, dan kunci jawaban</p>
         </div>
-        <button onclick="bukaModalSoal()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-2 shadow-md self-start sm:self-auto">
+        <button onclick="bukaModalSoal()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs flex items-center gap-2 shadow-md self-start sm:self-auto transition active:scale-95">
           <i data-lucide="plus" class="w-4 h-4"></i>
           <span>Tambah Soal Baru</span>
         </button>
       </div>
 
-      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3" id="daftar-soal">
-        <div class="text-center py-6 text-slate-400 text-xs">Memuat daftar butir soal...</div>
+      <!-- Filter Controls: Class Tabs & Search -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-3 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto" id="filter-kelas-container">
+          <button onclick="filterKelas('ALL', this)" class="btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 text-white transition">Semua Kelas</button>
+          <button onclick="filterKelas('VII-A', this)" class="btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">VII-A</button>
+          <button onclick="filterKelas('VII-B', this)" class="btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">VII-B</button>
+          <button onclick="filterKelas('VIII-A', this)" class="btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">VIII-A</button>
+          <button onclick="filterKelas('VIII-B', this)" class="btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">VIII-B</button>
+        </div>
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+          <input type="text" id="search-soal" oninput="renderSoalList()" placeholder="Cari pertanyaan soal..." class="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-sky-500 focus:bg-white" />
+        </div>
+      </div>
+
+      <!-- Question List -->
+      <div class="space-y-3" id="daftar-soal">
+        <div class="text-center py-8 text-slate-400 text-xs bg-white rounded-3xl border border-slate-200">Memuat butir soal...</div>
       </div>
     </div>
 
-    <!-- TAB 2: KOREKSI MANUAL -->
+    <!-- TAB 3: KOREKSI MANUAL -->
     <div id="panel-koreksi" class="panel space-y-4">
       <div>
         <h3 class="font-bold text-slate-900 text-base">Koreksi Jawaban Uraian & Esai Siswa</h3>
-        <p class="text-xs text-slate-500">Periksa uraian jawaban siswa dan berikan skor sesuai bobot</p>
+        <p class="text-xs text-slate-500">Periksa uraian jawaban siswa dan berikan skor sesuai bobot soal</p>
       </div>
       <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
         <table class="w-full text-left text-xs text-slate-700">
@@ -93,12 +160,43 @@
               <th class="p-4">Siswa</th>
               <th class="p-4">Pertanyaan</th>
               <th class="p-4">Jawaban Siswa</th>
-              <th class="p-4" width="140">Skor (0-100)</th>
+              <th class="p-4" width="140">Skor</th>
               <th class="p-4" width="90">Aksi</th>
             </tr>
           </thead>
           <tbody id="tb-koreksi" class="divide-y divide-slate-100">
-            <tr><td colspan="5" class="p-6 text-center text-slate-400">Semua jawaban siswa telah dinilai</td></tr>
+            <tr><td colspan="5" class="p-6 text-center text-slate-400">Tidak ada jawaban yang menunggu koreksi.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: REKAP NILAI SISWA -->
+    <div id="panel-nilai" class="panel space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+        <div>
+          <h3 class="font-bold text-slate-900 text-base">Rekap Nilai Siswa</h3>
+          <p class="text-xs text-slate-500">Hasil kumulatif nilai ujian seluruh peserta didik</p>
+        </div>
+        <div class="relative w-full sm:w-64">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+          <input type="text" id="search-nilai" oninput="renderNilaiAkhir()" placeholder="Cari nama atau NIS siswa..." class="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-sky-500" />
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[11px]">
+            <tr>
+              <th class="p-4">NIS</th>
+              <th class="p-4">Nama Siswa</th>
+              <th class="p-4">Kelas</th>
+              <th class="p-4">ID Ujian</th>
+              <th class="p-4">Total Skor</th>
+              <th class="p-4">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tb-nilai" class="divide-y divide-slate-100">
+            <tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada data nilai ujian masuk.</td></tr>
           </tbody>
         </table>
       </div>
@@ -106,10 +204,118 @@
 
   </main>
 
-  <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbysSoJeaz2W66vpxVDPhceruKBZNAYMKp7qDi6k9LWFvW8aIjVtD_dL6trA2NyEFY4pbQ/exec';
+  <!-- MODAL TAMBAH & EDIT SOAL -->
+  <div id="modal-soal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="edit-3" class="w-5 h-5 text-sky-600"></i>
+          <h3 class="font-bold text-slate-900 text-base" id="modal-soal-title">Tambah Butir Soal Baru</h3>
+        </div>
+        <button onclick="tutupModalSoal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
-    lucide.createIcons();
+      <form onsubmit="simpanSoal(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="f-id-soal" value="" />
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Target Kelas</label>
+            <select id="f-kelas" class="w-full p-2.5 border rounded-xl bg-slate-50">
+              <option value="Semua Kelas">Semua Kelas</option>
+              <option value="VII-A" selected>VII-A</option>
+              <option value="VII-B">VII-B</option>
+              <option value="VIII-A">VIII-A</option>
+              <option value="VIII-B">VIII-B</option>
+              <option value="IX-A">IX-A</option>
+              <option value="IX-B">IX-B</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tipe Soal</label>
+            <select id="f-tipe" onchange="toggleTipeSoal()" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-sky-800">
+              <option value="PG">Pilihan Ganda (PG)</option>
+              <option value="Isian">Isian Singkat</option>
+              <option value="Uraian">Uraian / Esai</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Bobot Poin</label>
+            <input type="number" id="f-bobot" value="20" min="1" max="100" class="w-full p-2.5 border rounded-xl bg-slate-50" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Teks Pertanyaan</label>
+          <textarea id="f-tanya" rows="3" placeholder="Tuliskan butir soal pertanyaan di sini..." class="w-full p-2.5 border rounded-xl bg-slate-50 focus:bg-white" required></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">URL Gambar Soal (Opsional)</label>
+          <input type="url" id="f-gambar" oninput="previewImageInput()" placeholder="https://drive.google.com/... atau https://i.ibb.co/..." class="w-full p-2.5 border rounded-xl bg-slate-50" />
+          <div id="box-preview-img" class="mt-2 hidden">
+            <img id="img-preview" src="" alt="Pratinjau Gambar" class="max-h-40 rounded-xl border border-slate-200 object-contain mx-auto" />
+          </div>
+        </div>
+
+        <!-- Opsi PG -->
+        <div id="box-opsi-pg" class="space-y-2 pt-2 border-t border-slate-100">
+          <div class="font-bold text-slate-700 text-xs">Pilihan Jawaban (A-D) & Kunci:</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-500 mb-0.5">Opsi A</label>
+              <input type="text" id="f-a" placeholder="Pilihan A..." class="w-full p-2 border rounded-xl bg-slate-50" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-0.5">Opsi B</label>
+              <input type="text" id="f-b" placeholder="Pilihan B..." class="w-full p-2 border rounded-xl bg-slate-50" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-0.5">Opsi C</label>
+              <input type="text" id="f-c" placeholder="Pilihan C..." class="w-full p-2 border rounded-xl bg-slate-50" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-0.5">Opsi D</label>
+              <input type="text" id="f-d" placeholder="Pilihan D..." class="w-full p-2 border rounded-xl bg-slate-50" />
+            </div>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Kunci Jawaban Benar</label>
+            <select id="f-kunci-pg" class="w-full p-2 border rounded-xl bg-emerald-50 text-emerald-800 font-bold">
+              <option value="A">Opsi A</option>
+              <option value="B">Opsi B</option>
+              <option value="C">Opsi C</option>
+              <option value="D">Opsi D</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Kunci Isian/Uraian -->
+        <div id="box-kunci-isian" class="hidden space-y-1.5 pt-2 border-t border-slate-100">
+          <label class="block font-bold text-slate-700 mb-1">Kunci / Pedoman Penilaian</label>
+          <textarea id="f-kunci-teks" rows="2" placeholder="Jawaban yang benar atau pedoman penskoran..." class="w-full p-2.5 border rounded-xl bg-slate-50"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="tutupModalSoal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 font-bold">Batal</button>
+          <button type="submit" id="btn-submit-soal" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold flex items-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Simpan Soal</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxY35_7Io1cGVVwzwsEn66htauRqvrouHTFm12H8d--MkNA5vNZcVgDuuR9c2fb6X_E2g/exec';
+
+    let allSoal = [];
+    let allKoreksi = [];
+    let allNilaiAkhir = [];
+    let selectedKelas = 'ALL';
 
     window.onload = () => {
       if (localStorage.getItem('cbt_role') !== 'Guru') {
@@ -117,18 +323,28 @@
         return;
       }
       document.getElementById('nama-guru').innerText = localStorage.getItem('cbt_nama') || 'Guru Pengampu';
-      document.getElementById('badge-mapel').innerText = localStorage.getItem('cbt_mapel') || 'Semua Mapel';
+      document.getElementById('badge-mapel').innerText = localStorage.getItem('cbt_mapel') || 'Fiqih';
       loadDataGuru();
     };
 
     function gantiTab(id, el) {
       document.querySelectorAll('.nav-tab').forEach(b => {
-        b.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition';
+        b.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition whitespace-nowrap';
       });
-      el.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-sm flex items-center gap-2 transition';
+      el.className = 'nav-tab px-4 py-2 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-sm flex items-center gap-2 transition whitespace-nowrap';
 
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       document.getElementById('panel-' + id).classList.add('active');
+      lucide.createIcons();
+    }
+
+    function filterKelas(kls, el) {
+      selectedKelas = kls;
+      document.querySelectorAll('.btn-filter-kelas').forEach(b => {
+        b.className = 'btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition';
+      });
+      el.className = 'btn-filter-kelas px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-600 text-white transition';
+      renderSoalList();
     }
 
     async function loadDataGuru() {
@@ -144,55 +360,300 @@
         }).then(r => r.json());
 
         if (res.status === 'success') {
-          // Render Soal
-          document.getElementById('daftar-soal').innerHTML = res.data.soal.map((s, idx) => `
-            <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-2">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-800 font-bold text-xs flex items-center justify-center">${idx + 1}</span>
-                  <span class="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-bold">${s.tipe}</span>
-                  <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">${s.bobot} Poin</span>
-                </div>
-                <span class="text-xs text-slate-400 font-mono">${s.id}</span>
-              </div>
-              <p class="text-xs font-medium text-slate-900 leading-relaxed">${s.tanya}</p>
-              ${s.tipe === 'PG' ? `
-                <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-1">
-                  <div><b>A.</b> ${s.a}</div>
-                  <div><b>B.</b> ${s.b}</div>
-                  <div><b>C.</b> ${s.c}</div>
-                  <div><b>D.</b> ${s.d}</div>
-                  <div class="col-span-2 text-emerald-700 font-bold">Kunci Jawaban: ${s.kunci}</div>
-                </div>` : ''}
-            </div>
-          `).join('') || '<div class="text-center py-6 text-slate-400 text-xs">Belum ada butir soal dibuat.</div>';
+          allSoal = res.data.soal || [];
+          allKoreksi = res.data.nilai || [];
+          allNilaiAkhir = res.data.nilaiAkhir || [];
 
-          // Render Koreksi
-          document.getElementById('tb-koreksi').innerHTML = res.data.nilai.map(n => `
-            <tr id="baris-${n.row}" class="hover:bg-slate-50/80">
-              <td class="p-4 font-bold text-slate-900">${n.nama_siswa || n.u_id}</td>
-              <td class="p-4 max-w-xs truncate">${n.tanya}</td>
-              <td class="p-4 italic text-slate-700">${n.jwb}</td>
-              <td class="p-4"><input type="number" id="nilai-${n.row}" class="w-20 p-2 border rounded-xl bg-slate-50 text-center font-bold text-emerald-700" placeholder="0-100"></td>
-              <td class="p-4"><button onclick="simpanKoreksi(${n.row})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">Simpan</button></td>
-            </tr>
-          `).join('') || '<tr><td colspan="5" class="p-6 text-center text-slate-400">Semua jawaban siswa telah dinilai</td></tr>';
+          document.getElementById('st-soal').innerText = allSoal.length;
+          document.getElementById('st-koreksi').innerText = allKoreksi.length;
+          document.getElementById('st-rekap').innerText = allNilaiAkhir.length;
+
+          const badgeCount = document.getElementById('badge-count-koreksi');
+          if (allKoreksi.length > 0) {
+            badgeCount.innerText = allKoreksi.length;
+            badgeCount.classList.remove('hidden');
+          } else {
+            badgeCount.classList.add('hidden');
+          }
+
+          renderSoalList();
+          renderKoreksiList();
+          renderNilaiAkhir();
         }
       } catch (err) {
-        console.error(err);
+        console.error('Gagal mengambil data guru:', err);
+      } finally {
+        lucide.createIcons();
       }
     }
 
-    async function simpanKoreksi(rowIndex) {
-      const skor = document.getElementById('nilai-' + rowIndex).value;
-      if (skor === '') return alert('Masukkan nilai terlebih dahulu!');
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'simpanNilai', row_index: rowIndex, nilai: skor })
+    function renderSoalList() {
+      const search = (document.getElementById('search-soal').value || '').toLowerCase();
+      let filtered = allSoal.filter(s => {
+        const matchKelas = selectedKelas === 'ALL' || s.kelas === selectedKelas || s.kelas === 'Semua Kelas';
+        const matchSearch = (s.tanya || '').toLowerCase().includes(search) || (s.id || '').toLowerCase().includes(search);
+        return matchKelas && matchSearch;
       });
-      document.getElementById('baris-' + rowIndex).innerHTML = '<td colspan="5" class="p-4 text-center text-emerald-700 font-bold">Skor tersimpan.</td>';
-      setTimeout(() => document.getElementById('baris-' + rowIndex).remove(), 1200);
+
+      const container = document.getElementById('daftar-soal');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="text-center py-8 text-slate-400 text-xs bg-white rounded-3xl border border-slate-200">Belum ada butir soal pada kelas ini.</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map((s, idx) => {
+        let imgHtml = '';
+        if (s.gambar) {
+          imgHtml = `<div class="my-2.5 max-w-sm"><img src="${s.gambar}" alt="Gambar Soal" class="rounded-xl border border-slate-200 max-h-48 object-contain" /></div>`;
+        }
+
+        let opsiHtml = '';
+        if (s.tipe === 'PG') {
+          opsiHtml = `
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 mt-2">
+              <div class="p-2 rounded-xl border ${s.kunci === 'A' ? 'border-emerald-500 bg-emerald-50/60 font-bold text-emerald-900' : 'border-slate-100 bg-slate-50'}">A. ${s.a}</div>
+              <div class="p-2 rounded-xl border ${s.kunci === 'B' ? 'border-emerald-500 bg-emerald-50/60 font-bold text-emerald-900' : 'border-slate-100 bg-slate-50'}">B. ${s.b}</div>
+              <div class="p-2 rounded-xl border ${s.kunci === 'C' ? 'border-emerald-500 bg-emerald-50/60 font-bold text-emerald-900' : 'border-slate-100 bg-slate-50'}">C. ${s.c}</div>
+              <div class="p-2 rounded-xl border ${s.kunci === 'D' ? 'border-emerald-500 bg-emerald-50/60 font-bold text-emerald-900' : 'border-slate-100 bg-slate-50'}">D. ${s.d}</div>
+            </div>
+            <div class="mt-2 text-[11px] font-bold text-emerald-700">Kunci Jawaban: Opsi ${s.kunci}</div>
+          `;
+        } else {
+          opsiHtml = `<div class="mt-2 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="font-bold text-slate-700">Kunci / Pedoman:</span> ${s.kunci || 'Tidak ada'}</div>`;
+        }
+
+        return `
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-2 hover:border-sky-300 transition">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-800 text-xs font-bold flex items-center justify-center">${idx + 1}</span>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold uppercase">${s.tipe}</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">${s.bobot} Poin</span>
+                <span class="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 text-[10px] font-bold">${s.kelas || 'Semua Kelas'}</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="editSoal('${s.id}')" class="px-2.5 py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-xs font-bold flex items-center gap-1 transition">
+                  <i data-lucide="edit" class="w-3.5 h-3.5"></i>
+                  <span>Edit</span>
+                </button>
+                <button onclick="hapusSoal('${s.id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition" title="Hapus Soal">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            
+            <p class="text-xs sm:text-sm text-slate-900 font-semibold leading-relaxed pt-1">${s.tanya}</p>
+            ${imgHtml}
+            ${opsiHtml}
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderKoreksiList() {
+      const tb = document.getElementById('tb-koreksi');
+      if (allKoreksi.length === 0) {
+        tb.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400">Semua jawaban siswa telah dinilai!</td></tr>';
+        return;
+      }
+
+      tb.innerHTML = allKoreksi.map((k) => `
+        <tr class="hover:bg-slate-50/80">
+          <td class="p-4 font-bold text-slate-900">${k.nama_siswa}</td>
+          <td class="p-4 text-slate-700 max-w-xs truncate">${k.tanya || 'Soal Uraian'}</td>
+          <td class="p-4 text-slate-800 font-medium bg-amber-50/40 rounded-lg">${k.jwb || '<i class="text-slate-400">Kosong</i>'}</td>
+          <td class="p-4">
+            <input type="number" id="inp-nilai-${k.row}" placeholder="0-100" min="0" max="100" class="w-24 p-2 border rounded-xl bg-slate-50 text-center font-bold" />
+          </td>
+          <td class="p-4">
+            <button onclick="simpanNilaiSiswa(${k.row})" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm transition">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span>Simpan</span>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderNilaiAkhir() {
+      const search = (document.getElementById('search-nilai').value || '').toLowerCase();
+      const filtered = allNilaiAkhir.filter(n => {
+        return (n.nama || '').toLowerCase().includes(search) || (n.nis || '').toLowerCase().includes(search);
+      });
+
+      const tb = document.getElementById('tb-nilai');
+      if (filtered.length === 0) {
+        tb.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400">Belum ada rekap nilai ditemukan.</td></tr>';
+        return;
+      }
+
+      tb.innerHTML = filtered.map(n => `
+        <tr class="hover:bg-slate-50/80">
+          <td class="p-4 font-mono font-bold text-slate-600">${n.nis}</td>
+          <td class="p-4 font-bold text-slate-900">${n.nama}</td>
+          <td class="p-4"><span class="px-2 py-0.5 rounded-md bg-slate-100 font-bold">${n.kelas}</span></td>
+          <td class="p-4 font-mono text-slate-500">${n.ujian_id}</td>
+          <td class="p-4 font-black text-emerald-600 text-sm">${n.total_skor}</td>
+          <td class="p-4">
+            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${n.total_skor >= 70 ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              ${n.total_skor >= 70 ? 'Tuntas' : 'Remedial'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function bukaModalSoal() {
+      document.getElementById('modal-soal-title').innerText = 'Tambah Butir Soal Baru';
+      document.getElementById('f-id-soal').value = '';
+      document.getElementById('f-tanya').value = '';
+      document.getElementById('f-gambar').value = '';
+      document.getElementById('f-a').value = '';
+      document.getElementById('f-b').value = '';
+      document.getElementById('f-c').value = '';
+      document.getElementById('f-d').value = '';
+      document.getElementById('f-kunci-teks').value = '';
+      document.getElementById('f-bobot').value = '20';
+      document.getElementById('box-preview-img').classList.add('hidden');
+      toggleTipeSoal();
+      document.getElementById('modal-soal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function tutupModalSoal() {
+      document.getElementById('modal-soal').classList.add('hidden');
+    }
+
+    function toggleTipeSoal() {
+      const tipe = document.getElementById('f-tipe').value;
+      if (tipe === 'PG') {
+        document.getElementById('box-opsi-pg').classList.remove('hidden');
+        document.getElementById('box-kunci-isian').classList.add('hidden');
+      } else {
+        document.getElementById('box-opsi-pg').classList.add('hidden');
+        document.getElementById('box-kunci-isian').classList.remove('hidden');
+      }
+    }
+
+    function previewImageInput() {
+      const url = document.getElementById('f-gambar').value.trim();
+      const box = document.getElementById('box-preview-img');
+      const img = document.getElementById('img-preview');
+      if (url) {
+        img.src = url;
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    function editSoal(id) {
+      const s = allSoal.find(x => x.id == id);
+      if (!s) return;
+
+      document.getElementById('modal-soal-title').innerText = 'Edit Butir Soal #' + s.id;
+      document.getElementById('f-id-soal').value = s.id;
+      document.getElementById('f-kelas').value = s.kelas || 'Semua Kelas';
+      document.getElementById('f-tipe').value = s.tipe || 'PG';
+      document.getElementById('f-bobot').value = s.bobot || 20;
+      document.getElementById('f-tanya').value = s.tanya || '';
+      document.getElementById('f-gambar').value = s.gambar || '';
+      document.getElementById('f-a').value = s.a || '';
+      document.getElementById('f-b').value = s.b || '';
+      document.getElementById('f-c').value = s.c || '';
+      document.getElementById('f-d').value = s.d || '';
+      if (s.tipe === 'PG') {
+        document.getElementById('f-kunci-pg').value = s.kunci || 'A';
+      } else {
+        document.getElementById('f-kunci-teks').value = s.kunci || '';
+      }
+      previewImageInput();
+      toggleTipeSoal();
+      document.getElementById('modal-soal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    async function simpanSoal(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-soal');
+      btn.disabled = true;
+      btn.innerText = 'Menyimpan...';
+
+      const idSoal = document.getElementById('f-id-soal').value;
+      const tipe = document.getElementById('f-tipe').value;
+      const payload = {
+        action: idSoal ? 'editSoal' : 'tambahSoal',
+        id_soal: idSoal,
+        user_id: localStorage.getItem('cbt_user_id'),
+        mapel: localStorage.getItem('cbt_mapel') || 'Fiqih',
+        kelas: document.getElementById('f-kelas').value,
+        tipe: tipe,
+        bobot: document.getElementById('f-bobot').value,
+        tanya: document.getElementById('f-tanya').value,
+        gambar: document.getElementById('f-gambar').value.trim(),
+        a: document.getElementById('f-a').value,
+        b: document.getElementById('f-b').value,
+        c: document.getElementById('f-c').value,
+        d: document.getElementById('f-d').value,
+        kunci: tipe === 'PG' ? document.getElementById('f-kunci-pg').value : document.getElementById('f-kunci-teks').value
+      };
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        tutupModalSoal();
+        loadDataGuru();
+      } catch (err) {
+        alert('Gagal menyimpan soal!');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="save" class="w-4 h-4"></i><span>Simpan Soal</span>';
+        lucide.createIcons();
+      }
+    }
+
+    async function hapusSoal(id) {
+      if (!confirm('Apakah Anda yakin ingin menghapus butir soal #' + id + '?')) return;
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'hapusSoal', id_soal: id, user_id: localStorage.getItem('cbt_user_id') })
+        });
+        loadDataGuru();
+      } catch (err) {
+        alert('Gagal menghapus soal.');
+      }
+    }
+
+    async function simpanNilaiSiswa(row) {
+      const val = document.getElementById('inp-nilai-' + row).value;
+      if (val === '') return alert('Masukkan nilai terlebih dahulu!');
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({
+            action: 'simpanNilai',
+            row_index: row,
+            nilai: parseInt(val),
+            user_id: localStorage.getItem('cbt_user_id')
+          })
+        });
+        loadDataGuru();
+      } catch (err) {
+        alert('Gagal menyimpan nilai.');
+      }
     }
 
     function logout() {
