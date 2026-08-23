@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Ujian CBT - Siswa</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: #0b1120; color: #f1f5f9; min-height: 100vh; }
+    .hidden { display: none !important; }
+    
+    .navbar-cbt {
+      background: #111827;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 14px 24px;
+    }
+    .card-exam-choice {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 24px;
+      transition: all 0.2s;
+    }
+    .card-exam-choice:hover {
+      border-color: #10b981;
+      transform: translateY(-2px);
+    }
+    
+    /* Exam Engine Layout */
+    .exam-header {
+      background: #0f172a;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 14px 24px;
+    }
+    .timer-pill {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.25rem;
+      padding: 6px 18px;
+      border-radius: 12px;
+      letter-spacing: 1px;
+    }
+    .question-box {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 28px;
+    }
+    .option-item {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .option-item:hover { border-color: #10b981; background: rgba(16,185,129,0.06); }
+    .option-item.selected { border-color: #10b981; background: rgba(16,185,129,0.15); }
+    .option-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #334155;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      margin-right: 14px;
+    }
+    .option-item.selected .option-badge { background: #10b981; }
+
+    /* Number Grid */
+    .grid-soal { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .btn-nomor {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: #334155;
+      color: #94a3b8;
+      transition: all 0.15s;
+    }
+    .btn-nomor.bg-hijau { background: #10b981 !important; color: white !important; border: none; }
+    .btn-nomor.bg-kuning { background: #f59e0b !important; color: white !important; border: none; }
+    .btn-nomor.active-soal { outline: 3px solid #38bdf8; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR SELEKSI UJIAN -->
+<nav class="navbar-cbt" id="main-nav">
+  <div class="container d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fas fa-graduation-cap text-success fa-xl"></i>
+      <h5 class="mb-0 fw-bold">CBT Siswa</h5>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="badge bg-secondary px-3 py-2" id="nama-siswa">Nama Siswa</span>
+      <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Keluar</button>
+    </div>
+  </div>
+</nav>
+
+<!-- DASHBOARD SELEKSI UJIAN -->
+<div class="container py-4" id="dashboard">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-1">Jadwal Ujian Tersedia</h4>
+      <p class="text-secondary small mb-0">Pilih mata pelajaran yang aktif untuk kelas Anda</p>
+    </div>
+    <button class="btn btn-outline-secondary btn-sm" onclick="loadUjian()"><i class="fas fa-sync-alt me-1"></i> Perbarui</button>
+  </div>
+  
+  <div class="row g-4" id="list-ujian">
+    <div class="col-12 text-center py-5 text-secondary">
+      <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+      <p>Memeriksa jadwal ujian aktif dari Google Sheets...</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TOKEN -->
+<div class="modal fade" id="modalToken" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:#1e293b; color:#fff; border-radius: 20px;">
+      <div class="modal-body text-center p-4">
+        <i class="fas fa-key text-warning fa-3x mb-3"></i>
+        <h5 class="fw-bold mb-1">Masukkan Token Ujian</h5>
+        <p class="text-secondary small mb-3" id="lbl-ujian">Ujian</p>
+        <input type="text" id="input-token" class="form-control form-control-lg text-center fw-bold text-warning font-monospace mb-3" placeholder="TOKEN" style="background:#0f172a; border-color:#334155; color:#f59e0b; letter-spacing: 4px;">
+        <button class="btn btn-success w-100 py-3 fw-bold rounded-3" onclick="validasi()"><i class="fas fa-play me-2"></i> MULAI UJIAN SEKARANG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGINE UJIAN CBT -->
+<div id="exam-engine" class="hidden">
+  <div class="exam-header d-flex justify-content-between align-items-center sticky-top">
+    <div>
+      <h5 class="fw-bold mb-0" id="judul-ujian">Ujian CBT</h5>
+      <small class="text-secondary" id="meta-siswa">Siswa</small>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="timer-pill" id="timer">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="container-fluid py-4 px-4">
+    <div class="row g-4">
+      <!-- AREA PERTANYAAN -->
+      <div class="col-lg-8">
+        <div class="question-box">
+          <div class="d-flex justify-content-between align-items-center border-bottom border-white-10 pb-3 mb-4">
+            <h5 class="fw-bold mb-0">Nomor <span id="no-soal" class="text-info">1</span></h5>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="cek-ragu" onchange="tandaiRagu()">
+              <label class="form-check-label text-warning fw-semibold small" for="cek-ragu"><i class="fas fa-flag me-1"></i> Ragu-ragu</label>
+            </div>
+          </div>
+
+          <div id="tanya" class="fs-5 mb-4 lh-base text-white">Memuat soal...</div>
+          <div id="opsi"></div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-white-10">
+            <button class="btn btn-outline-secondary px-4 py-2" onclick="nav(-1)"><i class="fas fa-arrow-left me-2"></i> Sebelumnya</button>
+            <button class="btn btn-primary px-4 py-2" onclick="nav(1)">Selanjutnya <i class="fas fa-arrow-right ms-2"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AREA PETA NOMOR SOAL -->
+      <div class="col-lg-4">
+        <div class="question-box">
+          <h6 class="fw-bold mb-3"><i class="fas fa-th me-2 text-info"></i>Navigasi Soal</h6>
+          <div class="grid-soal mb-4" id="grid"></div>
+          
+          <div class="d-flex justify-content-around text-center small text-secondary mb-4 pt-2 border-top border-white-10">
+            <div><span class="d-inline-block rounded-circle bg-success p-1 me-1"></span> Terjawab</div>
+            <div><span class="d-inline-block rounded-circle bg-warning p-1 me-1"></span> Ragu-ragu</div>
+            <div><span class="d-inline-block rounded-circle bg-secondary p-1 me-1"></span> Belum</div>
+          </div>
+
+          <button class="btn btn-danger w-100 py-3 fw-bold rounded-3" onclick="submitAkhir()">
+            <i class="fas fa-check-circle me-2"></i> KUMPULKAN JAWABAN
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxY35_7Io1cGVVwzwsEn66htauRqvrouHTFm12H8d--MkNA5vNZcVgDuuR9c2fb6X_E2g/exec';
+
+  async function fetchAPI(action, payload = {}) {
+    payload.action = action;
+    payload.user_id = localStorage.getItem('cbt_user_id');
+    payload.kelas = localStorage.getItem('cbt_kelas');
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).then(r => r.json());
+  }
+
+  let aId = '', sData = [], jData = {}, cIdx = 0, tInt, mToken;
+
+  window.onload = () => {
+    if (localStorage.getItem('cbt_role') !== 'Peserta') {
+      window.location.href = 'index.html';
+      return;
+    }
+    document.getElementById('nama-siswa').innerText = localStorage.getItem('cbt_nama') + ' (' + (localStorage.getItem('cbt_kelas') || '-') + ')';
+    mToken = new bootstrap.Modal(document.getElementById('modalToken'));
+
+    if (localStorage.getItem('run_exam')) {
+      resumeUjian(localStorage.getItem('run_exam'));
+    } else {
+      loadUjian();
+    }
+  };
+
+  async function loadUjian() {
+    let res = await fetchAPI('getPesertaData');
+    if (res.status === 'success') {
+      document.getElementById('list-ujian').innerHTML = res.data.map(u => `
+        <div class="col-md-4">
+          <div class="card-exam-choice">
+            <span class="badge bg-primary mb-2">${u.mapel}</span>
+            <h5 class="fw-bold text-white mb-2">${u.nama}</h5>
+            <p class="text-secondary small mb-3"><i class="fas fa-clock me-1"></i> Durasi: ${u.durasi} Menit</p>
+            ${u.sudah_selesai ?
+              `<button class="btn btn-secondary w-100 disabled"><i class="fas fa-check me-1"></i> Sudah Dikerjakan</button>` :
+              `<button class="btn btn-success w-100 fw-bold" onclick="bukaToken('${u.id}', '${u.nama}', ${u.durasi})"><i class="fas fa-pen-alt me-1"></i> Kerjakan Ujian</button>`
+            }
+          </div>
+        </div>
+      `).join('') || '<div class="col-12 text-center text-secondary py-4">Tidak ada ujian aktif untuk kelas Anda saat ini.</div>';
+    }
+  }
+
+  function bukaToken(id, nama, durasi) {
+    aId = id;
+    localStorage.setItem('tmp_dur', durasi);
+    document.getElementById('lbl-ujian').innerText = nama;
+    mToken.show();
+  }
+
+  async function validasi() {
+    let t = document.getElementById('input-token').value.trim();
+    let res = await fetchAPI('validasiToken', { ujian_id: aId, token: t });
+    if (res.status === 'success') {
+      mToken.hide();
+      localStorage.setItem('run_exam', aId);
+      resumeUjian(aId, false);
+    } else {
+      alert(res.msg || 'Token salah!');
+    }
+  }
+
+  async function resumeUjian(id, isRes = true) {
+    aId = id;
+    document.getElementById('main-nav').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('exam-engine').classList.remove('hidden');
+
+    let res = await fetchAPI('getSoal', { ujian_id: id });
+    sData = res.data || [];
+    if (!sData || sData.length === 0) {
+      alert('Belum ada butir soal yang cocok untuk ujian mata pelajaran "' + (res.mapel || 'ini') + '".
+
+Silakan pastikan nama Mata Pelajaran saat input Soal Guru sama persis dengan Mata Pelajaran pada Jadwal Ujian.');
+      localStorage.removeItem('run_exam');
+      window.location.reload();
+      return;
+    }
+    jData = isRes && localStorage.getItem('ans_' + id) ? JSON.parse(localStorage.getItem('ans_' + id)) : {};
+    if (!isRes) sData.forEach(s => jData[s.id] = { jwb: '', ragu: false });
+
+    document.getElementById('judul-ujian').innerText = 'Ujian CBT';
+    document.getElementById('meta-siswa').innerText = localStorage.getItem('cbt_nama') + ' | ' + localStorage.getItem('cbt_kelas');
+
+    buildGrid();
+    loadSoal(0);
+    let d = localStorage.getItem('tmp_dur') || 90;
+    mulaiTimer(d);
+  }
+
+  function buildGrid() {
+    let g = document.getElementById('grid');
+    g.innerHTML = '';
+    sData.forEach((s, i) => {
+      let b = document.createElement('button');
+      b.id = 'b-' + i;
+      b.innerText = i + 1;
+      b.className = 'btn btn-nomor';
+      b.onclick = () => loadSoal(i);
+      g.appendChild(b);
+      updateWarna(i);
+    });
+  }
+
+  function loadSoal(i) {
+    if (i < 0 || i >= sData.length) return;
+    document.querySelectorAll('.btn-nomor').forEach(b => b.classList.remove('active-soal'));
+    let activeBtn = document.getElementById('b-' + i);
+    if (activeBtn) activeBtn.classList.add('active-soal');
+    
+    cIdx = i;
+    let s = sData[i];
+    document.getElementById('no-soal').innerText = i + 1;
+    document.getElementById('tanya').innerText = s.tanya;
+    document.getElementById('cek-ragu').checked = jData[s.id] ? jData[s.id].ragu : false;
+
+    let area = document.getElementById('opsi');
+    area.innerHTML = '';
+
+    if (s.tipe === 'PG') {
+      ['a', 'b', 'c', 'd'].forEach(opt => {
+        let isSelected = jData[s.id] && jData[s.id].jwb === opt.toUpperCase();
+        area.innerHTML += `
+          <div class="option-item ${isSelected ? 'selected' : ''}" onclick="simpanJwb('${opt.toUpperCase()}')">
+            <span class="option-badge">${opt.toUpperCase()}</span>
+            <span class="flex-grow-1">${s[opt] || '-'}</span>
+          </div>
+        `;
+      });
+    } else {
+      area.innerHTML = `<textarea class="form-control" rows="5" placeholder="Ketikkan jawaban Anda di sini..." oninput="simpanJwb(this.value)">${jData[s.id] ? jData[s.id].jwb : ''}</textarea>`;
+    }
+  }
+
+  function simpanJwb(v) {
+    if (!jData[sData[cIdx].id]) jData[sData[cIdx].id] = { jwb: '', ragu: false };
+    jData[sData[cIdx].id].jwb = v;
+    updateWarna(cIdx);
+    localStorage.setItem('ans_' + aId, JSON.stringify(jData));
+    loadSoal(cIdx);
+  }
+
+  function tandaiRagu() {
+    if (!jData[sData[cIdx].id]) jData[sData[cIdx].id] = { jwb: '', ragu: false };
+    jData[sData[cIdx].id].ragu = document.getElementById('cek-ragu').checked;
+    updateWarna(cIdx);
+    localStorage.setItem('ans_' + aId, JSON.stringify(jData));
+  }
+
+  function updateWarna(i) {
+    let b = document.getElementById('b-' + i);
+    if (!b || !sData[i]) return;
+    let j = jData[sData[i].id];
+    b.className = 'btn btn-nomor ' + (i === cIdx ? 'active-soal ' : '');
+    if (j && j.ragu) b.classList.add('bg-kuning');
+    else if (j && j.jwb && j.jwb.trim() !== '') b.classList.add('bg-hijau');
+  }
+
+  function nav(a) {
+    loadSoal(cIdx + a);
+  }
+
+  function mulaiTimer(m) {
+    let eT = localStorage.getItem('et_' + aId);
+    if (!eT) {
+      eT = new Date().getTime() + (m * 60000);
+      localStorage.setItem('et_' + aId, eT);
+    }
+    tInt = setInterval(() => {
+      let dist = eT - new Date().getTime();
+      if (dist < 0) {
+        clearInterval(tInt);
+        kirimData();
+        alert('Waktu Ujian Telah Berakhir!');
+      } else {
+        let h = Math.floor(dist / (1000 * 60 * 60));
+        let mn = Math.floor((dist % (1000 * 60 * 60)) / (1000 * 60));
+        let s = Math.floor((dist % (1000 * 60)) / 1000);
+        document.getElementById('timer').innerText = (h < 10 ? '0' + h : h) + ':' + (mn < 10 ? '0' + mn : mn) + ':' + (s < 10 ? '0' + s : s);
+      }
+    }, 1000);
+  }
+
+  function submitAkhir() {
+    let unanswered = sData.filter(s => !jData[s.id] || !jData[s.id].jwb || jData[s.id].jwb.trim() === '').length;
+    let confirmMsg = unanswered > 0 ?
+      'Terdapat ' + unanswered + ' soal yang belum Anda jawab. Yakin ingin mengumpulkan ujian sekarang?' :
+      'Apakah Anda yakin ingin menyelesaikan dan mengumpulkan ujian ini?';
+    if (confirm(confirmMsg)) kirimData();
+  }
+
+  async function kirimData() {
+    clearInterval(tInt);
+    document.getElementById('timer').innerText = 'MENGIRIM...';
+    await fetchAPI('submitJawabanAkhir', { ujian_id: aId, jawaban: jData });
+    localStorage.removeItem('run_exam');
+    localStorage.removeItem('ans_' + aId);
+    localStorage.removeItem('et_' + aId);
+    alert('Ujian berhasil dikumpulkan! Terima kasih.');
+    location.reload();
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>
